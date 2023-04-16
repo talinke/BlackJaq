@@ -7,7 +7,6 @@ root = Tk()
 root.title('BlackJaQ - Card Deck')
 root.geometry("1200x800")
 root.configure(background="green")
-
 # ---------------
 # Resize Cards
 # ---------------
@@ -29,7 +28,7 @@ def resize_cards(card):
 # Shuffle The Cards
 # -----------------
 def shuffle():
-    global superpos_count
+    global superpos_count, ent
     # Clear all the old cards from previous games
     dealer_label_1.config(image='')
     dealer_label_2.config(image='')
@@ -76,6 +75,7 @@ def shuffle():
     dealer_score = 0
     player_score = 0
     stand_bool = 0
+    ent = 0 #'entangle' boolean
 
     # Shuffle Two Cards for player and dealer
     dealer_hit()
@@ -221,40 +221,210 @@ def player_hit():
 # Collapse the superposition of the previous card (not current)
 # -------------------------------------------------------------
 def collapse():
-    global superpos
+    global superpos, ent
     global player_card
     global player_spot, player_score
     global entangle_bool
     global player_image_1, player_image_2, player_image_3, player_image_4, player_image_5
-    card_button.configure(text = "Hit Me!", command = player_hit)
-    stand_button.configure(text = "Stand", command = stand)
+    card_button.configure(text="Hit Me!", command=player_hit)
+    stand_button.configure(text="Stand", command=stand)
 
-    player_card = random.choice(superpos[player_spot - 2])
-    player.append(player_card)
-    #deck.remove(player_card)
+    if ent == 0:
+        player_card = random.choice(superpos[player_spot - 2])
+        player.append(player_card)
+        #deck.remove(player_card)
 
-    pcard_s = player_card.split("_", 1)[0]
-    pcard = int(pcard_s.split("/", 1)[1])
-    print(pcard)
-    if pcard == 14:
-        pcard = 11
-    elif pcard == 11 or pcard == 12 or pcard == 13:
-        pcard = 10
+        pcard_s = player_card.split("_", 1)[0]
+        pcard = int(pcard_s.split("/", 1)[1])
+        print(pcard)
+        #assign score to special cards (ace, king, queen, jack)
+        if pcard == 14:
+            pcard = 11
+        elif pcard == 11 or pcard == 12 or pcard == 13:
+            pcard = 10
 
-    player_score += pcard
+        player_score += pcard
 
-    if player_spot == 2:
-        player_image_1 = resize_cards(player_card)
+        if player_spot == 2:
+            player_image_1 = resize_cards(player_card)
+            player_label_1.config(image=player_image_1)
+        elif player_spot == 3:
+            player_image_2 = resize_cards(player_card)
+            player_label_2.config(image=player_image_2)
+        elif player_spot == 4:
+            player_image_3 = resize_cards(player_card)
+            player_label_3.config(image=player_image_3)
+        elif player_spot == 5:
+            player_image_4 = resize_cards(player_card)
+            player_label_4.config(image=player_image_4)
+
+    #if cards had been entangled before
+    elif ent == 1:
+        row = random.choice([0, 1])
+        print("row =", row)
+
+        #most recent entangled card
+        player_card = superpos[player_spot - 2][row]
+        player.append(player_card)
+        pcard_s = player_card.split("_", 1)[0]
+        pcard = int(pcard_s.split("/", 1)[1])
+        if pcard == 14:
+            pcard = 11
+        elif pcard == 11 or pcard == 12 or pcard == 13:
+            pcard = 10
+        player_score += pcard
+
+        #next card after
+        player_card1 = superpos[player_spot - 3][row]
+        player.append(player_card1)
+        pcard_s = player_card1.split("_", 1)[0]
+        pcard = int(pcard_s.split("/", 1)[1])
+        if pcard == 14:
+            pcard = 11
+        elif pcard == 11 or pcard == 12 or pcard == 13:
+            pcard = 10
+        player_score += pcard
+
+        if player_spot == 2:
+            player_image_1 = resize_cards(player_card)
+            player_label_1.config(image=player_image_1)
+        elif player_spot == 3:
+            player_image_1 = resize_cards(player_card1)
+            player_label_1.config(image=player_image_1)
+            player_image_2 = resize_cards(player_card)
+            player_label_2.config(image=player_image_2)
+        elif player_spot == 4:
+            player_image_2 = resize_cards(player_card1)
+            player_label_2.config(image=player_image_2)
+            player_image_3 = resize_cards(player_card)
+            player_label_3.config(image=player_image_3)
+        elif player_spot == 5:
+            player_image_3 = resize_cards(player_card1)
+            player_label_3.config(image=player_image_3)
+            player_image_4 = resize_cards(player_card)
+            player_label_4.config(image=player_image_4)
+
+    elif ent == 2:
+        row = random.choice([0, 1])
+        print("row =", row)
+
+        #most recent entangled card
+        player_card = superpos[player_spot - 2][row]
+        player.append(player_card)
+        pcard_s = player_card.split("_", 1)[0]
+        pcard = int(pcard_s.split("/", 1)[1])
+        if pcard == 14:
+            pcard = 11
+        elif pcard == 11 or pcard == 12 or pcard == 13:
+            pcard = 10
+        player_score += pcard
+
+        #next card after
+        player_card1 = superpos[player_spot - 3][row]
+        player.append(player_card1)
+        pcard_s = player_card1.split("_", 1)[0]
+        pcard = int(pcard_s.split("/", 1)[1])
+        if pcard == 14:
+            pcard = 11
+        elif pcard == 11 or pcard == 12 or pcard == 13:
+            pcard = 10
+        player_score += pcard
+
+        # next card after
+        player_card2 = superpos[player_spot - 4][row]
+        player.append(player_card2)
+        pcard_s = player_card2.split("_", 1)[0]
+        pcard = int(pcard_s.split("/", 1)[1])
+        if pcard == 14:
+            pcard = 11
+        elif pcard == 11 or pcard == 12 or pcard == 13:
+            pcard = 10
+        player_score += pcard
+
+        if player_spot == 4:
+            player_image_1 = resize_cards(player_card2)
+            player_label_1.config(image=player_image_1)
+            player_image_2 = resize_cards(player_card1)
+            player_label_2.config(image=player_image_2)
+            player_image_3 = resize_cards(player_card)
+            player_label_3.config(image=player_image_3)
+        elif player_spot == 5:
+            player_image_2 = resize_cards(player_card2)
+            player_label_2.config(image=player_image_2)
+            player_image_3 = resize_cards(player_card1)
+            player_label_3.config(image=player_image_3)
+            player_image_4 = resize_cards(player_card)
+            player_label_4.config(image=player_image_4)
+
+    elif ent == 3:
+        row = random.choice([0, 1])
+        print("row =", row)
+
+        #most recent entangled card
+        player_card = superpos[player_spot - 2][row]
+        player.append(player_card)
+        pcard_s = player_card.split("_", 1)[0]
+        pcard = int(pcard_s.split("/", 1)[1])
+        if pcard == 14:
+            pcard = 11
+        elif pcard == 11 or pcard == 12 or pcard == 13:
+            pcard = 10
+        player_score += pcard
+
+        #next card after
+        player_card1 = superpos[player_spot - 3][row]
+        player.append(player_card1)
+        pcard_s = player_card1.split("_", 1)[0]
+        pcard = int(pcard_s.split("/", 1)[1])
+        if pcard == 14:
+            pcard = 11
+        elif pcard == 11 or pcard == 12 or pcard == 13:
+            pcard = 10
+        player_score += pcard
+
+        # next card after
+        player_card2 = superpos[player_spot - 4][row]
+        player.append(player_card2)
+        pcard_s = player_card2.split("_", 1)[0]
+        pcard = int(pcard_s.split("/", 1)[1])
+        if pcard == 14:
+            pcard = 11
+        elif pcard == 11 or pcard == 12 or pcard == 13:
+            pcard = 10
+        player_score += pcard
+
+        # next card after
+        player_card3 = superpos[player_spot - 5][row]
+        player.append(player_card3)
+        pcard_s = player_card3.split("_", 1)[0]
+        pcard = int(pcard_s.split("/", 1)[1])
+        if pcard == 14:
+            pcard = 11
+        elif pcard == 11 or pcard == 12 or pcard == 13:
+            pcard = 10
+        player_score += pcard
+
+
+        player_image_1 = resize_cards(player_card3)
         player_label_1.config(image=player_image_1)
-    elif player_spot == 3:
-        player_image_2 = resize_cards(player_card)
+        player_image_2 = resize_cards(player_card2)
         player_label_2.config(image=player_image_2)
-    elif player_spot == 4:
-        player_image_3 = resize_cards(player_card)
+        player_image_3 = resize_cards(player_card1)
         player_label_3.config(image=player_image_3)
-    elif player_spot == 5:
         player_image_4 = resize_cards(player_card)
         player_label_4.config(image=player_image_4)
+
+
+
+    player_label_11.config(image='')
+    player_label_21.config(image='')
+    player_label_31.config(image='')
+    player_label_41.config(image='')
+    player_label_51.config(image='')
+
+    ent = 0
+
+
 
 
 
@@ -271,7 +441,9 @@ def entangle():
 
     global player_image_1, player_image_2, player_image_3, player_image_4, player_image_5
     global player_image_11, player_image_21, player_image_31, player_image_41, player_image_51
-    global superpos, player_spot
+    global superpos, player_spot, ent, card1, card11, card2, card22
+
+    ent = ent+1
 
     card1 = superpos[player_spot - 2][0]
     card11 = superpos[player_spot - 2][1]
@@ -323,6 +495,8 @@ def entangle():
 def stand():
     card_button.configure(text="Collapse", command=collapse)
     stand_button.configure(text = "Entangle!", command = entangle)
+    card_button.config(state="disabled")
+    stand_button.config(state="disabled")
 
     global player_score, dealer_score, player_spot, stand_bool
 
@@ -330,10 +504,6 @@ def stand():
         player_spot += 1
         collapse()
         stand_bool = 1
-
-
-    card_button.config(state="disabled")
-    stand_button.config(state="disabled")
 
     if dealer_score >= 17:
         if dealer_score > 21:
@@ -430,10 +600,10 @@ my_frame = Frame(root, bg="green")
 my_frame.pack(pady=20)
 
 # Create Frames For Cards
-dealer_frame = LabelFrame(my_frame, text="Dealer", bd=0)
+dealer_frame = LabelFrame(my_frame, text="Dealer", font=("Helvetica", 44), bd=0)
 dealer_frame.pack(padx=20, ipadx=20)
 
-player_frame = LabelFrame(my_frame, text="Player", bd=0)
+player_frame = LabelFrame(my_frame, text="Player", font=("Helvetica", 44), bd=0)
 player_frame.pack(ipadx=20, pady=10)
 
 # Put Dealer cards in frames
@@ -492,16 +662,30 @@ button_frame = Frame(root, bg="green")
 button_frame.pack(pady=20)
 
 # Create buttons
-shuffle_button = Button(button_frame, text="Shuffle Deck", font=("Helvetica", 14), command=shuffle)
+shuffle_button = Button(button_frame, text="Shuffle Deck", font=("Helvetica", 34), command=shuffle)
 shuffle_button.grid(row=0, column=0)
 
-card_button = Button(button_frame, text="Collapse", font=("Helvetica", 14), command=collapse)
+card_button = Button(button_frame, text="Collapse", font=("Helvetica", 34), command=collapse)
 card_button.grid(row=0, column=1, padx=10)
 
-stand_button = Button(button_frame, text = "Entangle!", font=("Helvetica", 14), command = entangle)
+stand_button = Button(button_frame, text="Entangle!", font=("Helvetica", 34), command = entangle)
 stand_button.grid(row=0, column=2)
 
 # Shuffle Deck On Start
 shuffle()
+
+# Create Score Frame
+#score_frame = Frame(root, bg="green")
+#score_frame.pack(pady=20)
+
+# Create Score Fields
+#var = StringVar()
+#var1 = StringVar()
+#player_field = Label(score_frame, textvariable=var, font=("Helvetica", 14))
+#player_field.grid(row=0, column=0)
+#var.set("Player: "+ str(player_score))
+#dealer_field = Label(score_frame, textvariable=var1, font=("Helvetica", 14))
+#dealer_field.grid(row=0, column=1)
+#var1.set("Dealer: "+ str(dealer_score))
 
 root.mainloop()
